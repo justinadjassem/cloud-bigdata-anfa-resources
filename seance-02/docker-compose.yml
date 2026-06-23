@@ -1,0 +1,36 @@
+services:
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: anfa-admin
+      MINIO_ROOT_PASSWORD: anfa-password-2026
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "minio server /data --help || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    environment:
+      JUPYTER_TOKEN: anfa-token
+    ports:
+      - "8888:8888"
+    depends_on:
+      minio:
+        condition: service_healthy
+  anfa-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    volumes:
+      - ../data/referentiel:/data/referentiel:ro
+volumes:
+  minio-data:
