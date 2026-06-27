@@ -1,0 +1,5 @@
+# terraform.tfvars — valeurs des variables pour cet environnement
+# ───────────────────────────────────────────────────────────────
+# ATTENTION : ce fichier contient des secrets. Il est dans .gitignore.
+minio_root_password = "pass_example"
+# Les autres variables prennent leur valeur par défaut définie dans variables.tf
