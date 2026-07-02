@@ -1,8 +1,8 @@
 # Rendu : Séance 6
 
-**Nom et prénom :** Denis AKPAGNONITE
-**Identifiant GitHub :** <votre-username>
-**Date de soumission :** <JJ/MM/AAAA>
+**Nom et prénom :** ADJASSEM Justin
+**Identifiant GitHub :** justinadjassem
+**Date de soumission :** 02/07/2026
 
 ## Résumé de la séance
 
@@ -38,9 +38,9 @@ propagation d'échec ont été observés via un bug volontaire.
 
 ## Réflexion personnelle
 
-<3-5 lignes : qu'apporte Airflow par rapport à un cron simple ?
-Dans quel cas l'utiliser sur un vrai projet ?>
+Airflow apporte une visibilité complète sur l'exécution des pipelines grâce à son interface web, contrairement à cron qui est opaque et ne permet pas de suivre l'état des tâches en temps réel. La gestion des dépendances entre tâches (avec l'opérateur `>>`) garantit l'ordre d'exécution et la propagation des échecs : si une tâche échoue, les tâches en aval ne se lancent pas. Le mécanisme de retries automatiques avec délai configurable permet de gérer les erreurs transitoires sans intervention manuelle. Sur un vrai projet, Airflow est pertinent dès qu'on a un pipeline de données avec plusieurs étapes dépendantes, par exemple un ETL quotidien qui extrait, transforme puis charge des données, où la traçabilité et la reprise sur erreur sont essentielles.
 
 ## Difficultés rencontrées
 
-<Aucune | Décrivez brièvement.>
+- Conflit de noms de conteneurs Docker (`anfa-minio`, `anfa-spark-master`) avec ceux de la séance 05 : résolu en supprimant les anciens conteneurs avec `docker rm -f`.
+- PostgreSQL 18 incompatible avec le volume monté sur `/var/lib/postgresql/data` : résolu en changeant le point de montage vers `/var/lib/postgresql` et en recréant le volume.
