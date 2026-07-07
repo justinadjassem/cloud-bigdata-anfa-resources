@@ -1,13 +1,12 @@
 # Rendu — Séance 8
 
-**Nom et prénom :** <Votre nom complet>
-**Identifiant GitHub :** <votre-username>
-**Date de soumission :** <JJ/MM/AAAA>
+**Nom et prénom :** ADJASSEM Justin
+**Identifiant GitHub :** adjassemjustin
+**Date de soumission :** 07/07/2026
 
 ## Résumé de la séance
 
-<2-4 lignes : logique métier séparée et testée, pipeline CI/CD GitHub Actions
-écrit, démonstration d'un test bloquant le déploiement.>
+Durant cette séance, nous avons séparé la logique métier du DAG Airflow dans un module Python indépendant (`anfa_logic.py`) et écrit 5 tests unitaires avec pytest pour valider son comportement. Un pipeline CI/CD GitHub Actions a été mis en place avec deux jobs : lint (flake8) + tests unitaires, puis déploiement simulé conditionné par le succès du premier job. Nous avons démontré qu'un bug volontaire (division par 1000 au lieu de 1024 pour la conversion en Ko) fait échouer les tests et bloque automatiquement le déploiement, puis qu'après correction le pipeline passe au vert et le déploiement s'exécute.
 
 ## Étapes principales
 
@@ -26,9 +25,7 @@
 
 ## Réflexion personnelle
 
-<3-5 lignes : en quoi ce pipeline aurait-il empêché l'incident de Mawuli
-(situation-problème du CM) ? Qu'est-ce que `needs:` change concrètement ?>
+Si Mawuli avait eu ce pipeline CI/CD en place, son DAG défectueux n'aurait jamais atteint la production. Les tests unitaires auraient détecté le bug avant le merge, et le job de déploiement ne se serait pas exécuté grâce à la directive `needs: valider-dag` qui conditionne son lancement au succès complet du job de validation.
 
-## Difficultés rencontrées
+Concrètement, `needs:` crée une dépendance entre les jobs : le job `deployer` attend que `valider-dag` réussisse avant de démarrer. Si le lint ou un seul test échoue, le déploiement est automatiquement annulé. C'est un filet de sécurité qui empêche tout code non validé d'être déployé, contrairement à un déploiement manuel où l'erreur humaine est toujours possible.
 
-<Aucune | Décrivez brièvement.>
