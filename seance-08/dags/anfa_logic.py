@@ -9,7 +9,7 @@ elles peuvent être testées en CI sans rien installer d'autre que Python.
 
 def construire_cle_trajets(prefixe: str = "trajets") -> str:
     """Construit la clé S3/MinIO où sont stockés les trajets générés."""
-    return f"{prefixe}/trajets_recent.csv"
+    return f"{prefixe}/trajets_recent.txt"
 
 
 def verifier_liste_fichiers(objets: list) -> dict:
