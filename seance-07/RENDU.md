@@ -1,13 +1,12 @@
 # Rendu — Séance 7
 
-**Nom et prénom :** <Votre nom complet>
-**Identifiant GitHub :** <votre-username>
-**Date de soumission :** <JJ/MM/AAAA>
+**Nom et prénom :** ADJASSEM Justin
+**Identifiant GitHub :** adjassemjustin
+**Date de soumission :** 07/07/2026
 
 ## Résumé de la séance
 
-<2-4 lignes : cluster Kafka 3 brokers déployé, flotte de bus simulée en flux continu,
-tolérance aux pannes observée, Spark Structured Streaming consommant et agrégeant le flux vers MinIO.>
+Durant cette séance, nous avons déployé un cluster Apache Kafka à 3 brokers en mode KRaft avec Docker Compose, puis créé le topic `anfa-positions-bus` (3 partitions, facteur de réplication 3). Un simulateur Python a généré en continu les positions GPS de 100 bus sur 12 lignes. Nous avons vérifié la tolérance aux pannes en arrêtant un broker : le cluster a continué à fonctionner avec 2 brokers sur 3, les partitions se redistribuant automatiquement. Enfin, Spark Structured Streaming a consommé le flux Kafka, agrégé les données par fenêtre de 30 secondes et par ligne, puis écrit les résultats au format Parquet dans MinIO.
 
 ## Étapes principales
 
@@ -37,13 +36,13 @@ tolérance aux pannes observée, Spark Structured Streaming consommant et agrég
 
 ## Réflexion personnelle
 
-<3-5 lignes : dans quel cas utiliseriez-vous Kafka + Spark Streaming plutôt que le pipeline batch
-Airflow + Spark vu en séance 5-6 ? Qu'est-ce que la réplication à 3 brokers vous a concrètement montré ?>
+Le pipeline Kafka + Spark Streaming est adapté aux cas nécessitant un traitement en temps réel ou quasi-réel, par exemple le suivi en direct d'une flotte de bus, la détection d'anomalies ou les alertes instantanées. En revanche, le pipeline batch Airflow + Spark (séances 5-6) convient mieux aux traitements planifiés sur de gros volumes historiques (rapports quotidiens, ETL nocturnes) où la latence de quelques heures est acceptable.
 
-## Réponses aux exercices d'application
-
-<À compléter d'après les énoncés fournis avec l'assignment.>
+La réplication à 3 brokers m'a concrètement montré la résilience de Kafka : après l'arrêt volontaire de kafka-2, le cluster a continué à produire et consommer sans perte de messages. Les URP (Under-Replicated Partitions) sont montées à 53 et les Out Of Sync Replicas à 53, mais toutes les partitions sont restées en ligne (53 sur 53). Cela illustre l'intérêt du facteur de réplication 3 : on peut perdre un broker sans interruption de service.
 
 ## Difficultés rencontrées
 
-<Aucune | Décrivez brièvement.>
+Le job Spark Structured Streaming d'agrégation ne produisait pas de fichiers Parquet dans MinIO. Le dossier `agregats_par_ligne/` ne contenait que `_spark_metadata`. Après investigation, deux causes ont été identifiées :
+1. Le simulateur de bus n'était plus actif au moment du lancement du job d'agrégation, et celui-ci utilisait `startingOffsets = "latest"` (ne lit que les nouveaux messages).
+2. L'ancienne application Spark (lecture console) monopolisait le seul core du worker, empêchant le job d'agrégation d'obtenir des ressources (`Initial job has not accepted any resources`).
+Après avoir tué l'ancienne app, relancé le simulateur et nettoyé les checkpoints, les fichiers Parquet sont apparus correctement.
