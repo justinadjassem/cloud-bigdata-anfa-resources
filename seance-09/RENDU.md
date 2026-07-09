@@ -1,13 +1,12 @@
 # Rendu — Séance 9
 
-**Nom et prénom :** <Votre nom complet>
-**Identifiant GitHub :** <votre-username>
-**Date de soumission :** <JJ/MM/AAAA>
+**Nom et prénom :** ADJASSEM Justin
+**Identifiant GitHub :** adjassemjustin
+**Date de soumission :** 09/07/2026
 
 ## Résumé de la séance
 
-<2-4 lignes : stack Prometheus/Grafana déployée, exportateur de fraîcheur Anfa
-instrumenté, dashboard construit, alerte configurée et déclenchée sur panne simulée.>
+Déploiement d'une stack de monitoring complète (Prometheus, Grafana, Node Exporter, cAdvisor) ainsi qu'un exportateur métier custom mesurant la fraîcheur des données Anfa. Construction d'un dashboard Grafana avec import du template "Node Exporter Full" et création d'un panneau custom. Configuration d'une alerte sur la métrique de fraîcheur et validation par simulation d'une panne silencieuse déclenchant l'état Firing.
 
 ## Étapes principales
 
@@ -31,10 +30,8 @@ instrumenté, dashboard construit, alerte configurée et déclenchée sur panne 
 
 ## Réflexion personnelle
 
-<3-5 lignes : en quoi cette séance répond-elle directement à la situation-problème
-d'Awa dans le CM ? Qu'est-ce que la métrique de fraîcheur vous a permis de voir que
-les autres métriques (CPU, RAM, statut des conteneurs) ne montraient pas ?>
+Cette séance répond directement à la situation-problème d'Awa dans le CM : un pipeline peut tourner sans erreur visible (conteneurs actifs, CPU/RAM normaux) tout en produisant des données obsolètes. Les métriques classiques d'infrastructure (CPU, RAM, statut des conteneurs) ne détectent pas ce type de panne silencieuse. La métrique de fraîcheur (`anfa_freshness_seconds`) comble ce manque en mesurant l'âge réel des dernières données ingérées, permettant de déclencher une alerte avant que les utilisateurs ne s'en rendent compte. C'est la différence entre surveiller la santé technique d'un système et surveiller la qualité effective du service rendu.
 
 ## Difficultés rencontrées
 
-<Aucune | Décrivez brièvement.>
+Aucune difficulté majeure. La stack Docker Compose s'est déployée sans problème et les cibles Prometheus ont été détectées automatiquement.
